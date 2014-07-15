@@ -9,7 +9,9 @@ Example
 	byte[] input = Encoding.UTF8.GetBytes("hello world");
 	
 	xxHash hash = new xxHash();
+	hash.Init();
 	hash.Update(input, input.Count());
+	...
 	Console.WriteLine("{0:X}", hash.Digest());
 	
 or
