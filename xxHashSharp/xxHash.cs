@@ -119,6 +119,86 @@ namespace xxHashSharp
 
             return h32;
         }
+       
+       public static uint CalculateHash(Stream stream, long len = -1, uint seed = 0)
+        {
+            uint h32;
+            var index = 0;
+
+            if(!stream.CanRead || !stream.CanSeek)
+                throw new InvalidOperationException("Stream has to be seekable and readable");
+            
+            if (len == -1)
+            {
+                len = stream.Length;
+            }
+
+            var streamPosition = stream.Position;
+            stream.Seek(0, SeekOrigin.Begin);
+
+            var buffer = new byte[16];
+            if (len >= 16)
+            {
+                var limit = len - 16;
+                var v1 = seed + Prime321 + Prime322;
+                var v2 = seed + Prime322;
+                var v3 = seed + 0;
+                var v4 = seed - Prime321;
+
+                do
+                {
+                    var loopIndex = 0;
+                    stream.Read(buffer, 0, buffer.Length);
+
+                    v1 = CalcSubHash(v1, buffer, loopIndex);
+                    loopIndex += 4;
+                    v2 = CalcSubHash(v2, buffer, loopIndex);
+                    loopIndex += 4;
+                    v3 = CalcSubHash(v3, buffer, loopIndex);
+                    loopIndex += 4;
+                    v4 = CalcSubHash(v4, buffer, loopIndex);
+                    loopIndex += 4;
+
+                    index += loopIndex;
+                } while (index <= limit);
+
+                h32 = RotateLeft(v1, 1) + RotateLeft(v2, 7) + RotateLeft(v3, 12) + RotateLeft(v4, 18);
+            }
+            else
+            {
+                h32 = seed + Prime325;
+            }
+
+            h32 += (uint)len;
+
+            buffer = new byte[4];
+            while (index <= len - 4)
+            {
+                stream.Read(buffer, 0, buffer.Length);
+                h32 += BitConverter.ToUInt32(buffer, 0) * Prime323;
+                h32 = RotateLeft(h32, 17) * Prime324;
+                index += 4;
+            }
+
+            buffer = new byte[1];
+            while (index < len)
+            {
+                stream.Read(buffer, 0, buffer.Length);
+                h32 += buffer[0] * Prime325;
+                h32 = RotateLeft(h32, 11) * Prime321;
+                index++;
+            }
+
+            stream.Seek(streamPosition, SeekOrigin.Begin);
+
+            h32 ^= h32 >> 15;
+            h32 *= Prime322;
+            h32 ^= h32 >> 13;
+            h32 *= Prime323;
+            h32 ^= h32 >> 16;
+
+            return h32;
+        }
 
         public void Init(uint seed = 0)
         {
