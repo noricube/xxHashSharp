@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System;
+using System.IO;
 
 namespace xxHashSharp
 {
@@ -140,10 +141,10 @@ namespace xxHashSharp
             if (len >= 16)
             {
                 var limit = len - 16;
-                var v1 = seed + Prime321 + Prime322;
-                var v2 = seed + Prime322;
+                var v1 = seed + PRIME32_1 + PRIME32_2;
+                var v2 = seed + PRIME32_2;
                 var v3 = seed + 0;
-                var v4 = seed - Prime321;
+                var v4 = seed - PRIME32_1;
 
                 do
                 {
@@ -166,7 +167,7 @@ namespace xxHashSharp
             }
             else
             {
-                h32 = seed + Prime325;
+                h32 = seed + PRIME32_5;
             }
 
             h32 += (uint)len;
@@ -175,8 +176,8 @@ namespace xxHashSharp
             while (index <= len - 4)
             {
                 stream.Read(buffer, 0, buffer.Length);
-                h32 += BitConverter.ToUInt32(buffer, 0) * Prime323;
-                h32 = RotateLeft(h32, 17) * Prime324;
+                h32 += BitConverter.ToUInt32(buffer, 0) * PRIME32_3;
+                h32 = RotateLeft(h32, 17) * PRIME32_4;
                 index += 4;
             }
 
@@ -184,17 +185,17 @@ namespace xxHashSharp
             while (index < len)
             {
                 stream.Read(buffer, 0, buffer.Length);
-                h32 += buffer[0] * Prime325;
-                h32 = RotateLeft(h32, 11) * Prime321;
+                h32 += buffer[0] * PRIME32_5;
+                h32 = RotateLeft(h32, 11) * PRIME32_1;
                 index++;
             }
 
             stream.Seek(streamPosition, SeekOrigin.Begin);
 
             h32 ^= h32 >> 15;
-            h32 *= Prime322;
+            h32 *= PRIME32_2;
             h32 ^= h32 >> 13;
-            h32 *= Prime323;
+            h32 *= PRIME32_3;
             h32 ^= h32 >> 16;
 
             return h32;

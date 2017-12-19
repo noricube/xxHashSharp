@@ -31,12 +31,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
+    <Compile Include="..\xxHashSharp\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\xxHashSharp\xxHash.cs">
+      <Link>xxHash.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="xxHash.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Reference Include="System">
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
