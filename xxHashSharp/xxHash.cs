@@ -240,7 +240,7 @@ namespace xxHashSharp
                 _state.v4 = CalcSubHash(_state.v4, _state.memory, index);
                 index += 4;
 
-                index = 0;
+                index = 16 - _state.memsize;
                 _state.memsize = 0;
             }
 
